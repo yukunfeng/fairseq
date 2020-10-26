@@ -112,13 +112,17 @@ for o in `ls $orig/$lang/IWSLT17.TED*.$src.xml`; do
 done
 
 # Creating test
+# for l in $src $tgt; do
+    # cat $tmp/IWSLT17.TED.tst2010.$lang.$l \
+        # $tmp/IWSLT17.TED.tst2011.$lang.$l \
+        # $tmp/IWSLT17.TED.tst2012.$lang.$l \
+        # $tmp/IWSLT17.TED.tst2013.$lang.$l \
+        # $tmp/IWSLT17.TED.tst2014.$lang.$l \
+        # $tmp/IWSLT17.TED.tst2015.$lang.$l \
+        # > $tmp/test.$l
+# done
 for l in $src $tgt; do
-    cat $tmp/IWSLT17.TED.tst2010.$lang.$l \
-        $tmp/IWSLT17.TED.tst2011.$lang.$l \
-        $tmp/IWSLT17.TED.tst2012.$lang.$l \
-        $tmp/IWSLT17.TED.tst2013.$lang.$l \
-        $tmp/IWSLT17.TED.tst2014.$lang.$l \
-        $tmp/IWSLT17.TED.tst2015.$lang.$l \
+    cat $tmp/IWSLT17.TED.tst2015.$lang.$l \
         > $tmp/test.$l
 done
 

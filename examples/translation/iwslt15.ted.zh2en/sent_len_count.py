@@ -20,7 +20,7 @@ if __name__ == "__main__":
                 continue
             items = line.split(' ')
             sent_len = len(items)
-            if sent_len < 40:
+            if sent_len < 50:
               sent_len = "-50"
             elif sent_len < 100:
               sent_len = "50-100"
