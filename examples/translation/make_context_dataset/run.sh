@@ -4,5 +4,6 @@ python ./make_context_nmt_dataset.py \
     --data_prefix "./sample_data_for_context_dataset/sample" \
     --src "en" \
     --tgt "zh" \
-    --previous_n 4 \
+    --previous_n 1 \
+    --both_context 0 \
     --out_dir "./sample_out"
