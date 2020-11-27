@@ -10,6 +10,8 @@ def make_context_nmt_dataset(data_prefix,
                              previous_n=1,
                              seg_symbol="SEP"):
 
+  data_prefix = os.path.expanduser(data_prefix)
+  out_dir = os.path.expanduser(out_dir)
   src_path = f"{data_prefix}.{src}"
   tgt_path = f"{data_prefix}.{tgt}"
   src_fh = open(src_path, "r")
@@ -38,7 +40,7 @@ def make_context_nmt_dataset(data_prefix,
     output = align_src_side(src_lines, tgt_lines, previous_n, seg_symbol)
 
   _, dataname = os.path.split(data_prefix)
-  os.system(f"rm -rf {out_dir}")
+  #  os.system(f"rm -rf {out_dir}")
   os.system(f"mkdir -p {out_dir}")
 
   src_path = f"{out_dir}/{dataname}.{src}"
