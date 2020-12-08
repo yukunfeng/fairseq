@@ -25,7 +25,7 @@ tgt=en
 lang=en-zh
 prep=iwslt17.tokenized.zh-en
 tmp=$prep/tmp
-orig=orig
+orig=iwslt17.ted.zh2en.orig
 
 mkdir -p $orig $tmp $prep
 
