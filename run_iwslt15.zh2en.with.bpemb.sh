@@ -1,24 +1,9 @@
 set -x
 
 # Preprocess/binarize the data
-# Backup for previous unnomralized filenames
-# fairseq-preprocess --source-lang zh --target-lang en \
-    # --trainpref $TEXT/corpus.tc --validpref $TEXT/IWSLT15.TED.dev2010.tc --testpref $TEXT/IWSLT15.TED.tst2010_2013.tc \
-    # --destdir data-bin/iwslt15.tokenized.zh-en \
-    # --workers 20
-
-# TEXT=examples/translation/iwslt15.ted.zh2en
-# DATA="data-bin/iwslt15.tokenized.zh-en"
-# fairseq-preprocess --source-lang zh --target-lang en \
-    # --trainpref $TEXT/train --validpref $TEXT/valid --testpref $TEXT/test \
-    # --destdir $DATA \
-    # --workers 20
+TEXT=examples/translation/spm.iwslt15.ted.zh2en
 
 
-prevn=2
-side=both
-year=15
-TEXT=examples/translation/contextlized_${side}_prevn${prevn}_iwslt${year}.ted.zh2en
 save_dir="$(basename $TEXT).checkpoints"
 DATA="data-bin/$(basename $TEXT)"
 
@@ -28,7 +13,7 @@ DATA="data-bin/$(basename $TEXT)"
     # --workers 20
 
 # fairseq-train $DATA \
-    # --arch transformer_iwslt_de_en --share-decoder-input-output-embed \
+    # --arch transformer_iwslt_emb_300 --share-decoder-input-output-embed \
     # --optimizer adam --adam-betas '(0.9, 0.98)' --clip-norm 0.0 \
     # --lr 5e-4 --lr-scheduler inverse_sqrt --warmup-updates 4000 \
     # --dropout 0.3 --weight-decay 0.0001 \
@@ -46,5 +31,5 @@ DATA="data-bin/$(basename $TEXT)"
     # --max-epoch 25
 
 fairseq-generate $DATA \
-    --path $save_dir/checkpoint25.pt \
-    --batch-size 128 --beam 5 --remove-bpe
+    --path $save_dir/checkpoint_last.pt \
+    --batch-size 128 --beam 5 --remove-bpe=sentencepiece

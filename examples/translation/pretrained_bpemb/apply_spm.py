@@ -20,6 +20,7 @@ if __name__ == "__main__":
 
   with open(args.input_file, 'r') as fh:
     for line in fh:
+      line = line.strip()
       line_out = sp.encode(line, out_type=str)
       line_out = " ".join(line_out)
       print(line_out)
