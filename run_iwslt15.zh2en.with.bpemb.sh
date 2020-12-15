@@ -1,11 +1,19 @@
 set -x
 
 # Preprocess/binarize the data
-TEXT=examples/translation/spm.iwslt15.ted.zh2en
+TEXT=examples/translation/cbowenspm.iwslt15.ted.zh2en
+# TEXT=examples/translation/spm.iwslt15.ted.zh2en
+# base_str="emb500"
+# base_str="bpemb"
+# base_str="bpemb.en"
+# base_str="bpemb.zh"
+# base_str="cbowbpemb.en"
+base_str=""
+# base_str="noemb"
 
-
-save_dir="$(basename $TEXT).checkpoints"
-DATA="data-bin/$(basename $TEXT)"
+save_dir="$base_str$(basename $TEXT).checkpoints"
+DATA="data-bin/$base_str$(basename $TEXT)"
+tensor_dir="$base_str$(basename $TEXT).tensorlog"
 
 # fairseq-preprocess --source-lang zh --target-lang en \
     # --trainpref $TEXT/train --validpref $TEXT/valid --testpref $TEXT/test \
@@ -22,13 +30,17 @@ DATA="data-bin/$(basename $TEXT)"
     # --log-interval 10000000000 \
     # --eval-bleu \
     # --eval-bleu-args '{"beam": 5, "max_len_a": 1.2, "max_len_b": 10}' \
-    # --eval-bleu-detok moses \
+    # --eval-bleu-detok=space \
     # --eval-bleu-remove-bpe \
     # --eval-bleu-print-samples \
     # --best-checkpoint-metric bleu --maximize-best-checkpoint-metric \
     # --keep-last-epochs 1 \
     # --save-dir "$save_dir" \
-    # --max-epoch 25
+    # --max-epoch 25 \
+    # --tensorboard-logdir $tensor_dir \
+    # --decoder-embed-path ./examples/translation/pretrained_bpemb/cbowbpemb/WestburyLab.wikicorp.201004.spm.txt.neg.10.e10.d300.emb.vec
+    # --encoder-embed-path ./examples/translation/pretrained_bpemb/zh.wiki.bpe.vs25000.d300.w2v.txt \
+    # --decoder-embed-path ./examples/translation/pretrained_bpemb/en.wiki.bpe.vs25000.d300.w2v.txt
 
 fairseq-generate $DATA \
     --path $save_dir/checkpoint_last.pt \

@@ -186,6 +186,7 @@ def parse_embedding(embed_path):
 
 
 def load_embedding(embed_dict, vocab, embedding):
+    print_embed_overlap(embed_dict, vocab)
     for idx in range(len(vocab)):
         token = vocab[idx]
         if token in embed_dict:

@@ -16,7 +16,8 @@ fi
 src=zh
 tgt=en
 lang=en-zh
-prep=spm.iwslt17.ted.zh2en
+# prep=spm.iwslt17.ted.zh2en
+prep=cbowenspm.iwslt17.ted.zh2en
 tmp=$prep/tmp
 orig=iwslt17.ted.zh2en.orig
 
@@ -111,9 +112,22 @@ done
 mv $tmp/$f_tgt_tok $tmp/train.$tgt
 mv $tmp/train.$lang.$src $tmp/train.$src
 
-for L in $src $tgt; do
-    for f in train.$L valid.$L test.$L; do
-        echo "apply spm to ${f}..."
-        python ./pretrained_bpemb/apply_spm.py -m ./pretrained_bpemb/$L.wiki.bpe.vs25000.model  -i $tmp/$f > $prep/$f
-    done
+# wiki glove bpe
+# for L in $src $tgt; do
+    # for f in train.$L valid.$L test.$L; do
+        # echo "apply spm to ${f}..."
+        # python ./pretrained_bpemb/apply_spm.py -m ./pretrained_bpemb/$L.wiki.bpe.vs25000.model  -i $tmp/$f > $prep/$f
+    # done
+# done
+
+# 
+L=$src
+for f in train.$L valid.$L test.$L; do
+    echo "apply spm to ${f}..."
+    python ./pretrained_bpemb/spm_apply.py -m ./pretrained_bpemb/glovebpemb/$L.wiki.bpe.vs25000.model  -i $tmp/$f > $prep/$f
+done
+L=$tgt
+for f in train.$L valid.$L test.$L; do
+    echo "apply spm to ${f}..."
+    python ./pretrained_bpemb/spm_apply.py -m ./pretrained_bpemb/cbowbpemb/WestburyLab.wikicorp.201004.model -i $tmp/$f > $prep/$f
 done
