@@ -23,7 +23,8 @@ fi
 src=zh
 tgt=en
 lang=en-zh
-prep=iwslt17.tokenized.zh-en
+# prep=iwslt17.tokenized.zh-en
+prep=iwslt17.ted.zh2en
 tmp=$prep/tmp
 orig=iwslt17.ted.zh2en.orig
 

@@ -1,19 +1,35 @@
 set -x
 
-# Make NMT dataset for cjcoref.
+# Make NMT dataset for cjcoref for iwslt17.
 array=(train valid test)
 for filename in "${array[@]}"
 do
     python ./make_context_nmt_dataset.py \
-        --data_prefix "$HOME/fairseq/examples/translation/iwslt15.ted.zh2en.spm.orig/$filename" \
+        --data_prefix "$HOME/fairseq/examples/translation/iwslt17.ted.zh2en.before.bpe/$filename" \
         --src "zh" \
         --tgt "en" \
         --previous_n 5 \
         --both_context 1 \
-        --out_dir "$HOME/cjcoref/input_data/iwslt17" \
+        --out_dir "$HOME/cjcoref/input_data/iwslt17.zh2en" \
         --seg_symbol '[SEP]' \
-        --src_jieba
+
+        # --src_jieba
 done
+
+# Make NMT dataset for cjcoref for iwslt15.
+# array=(train valid test)
+# for filename in "${array[@]}"
+# do
+    # python ./make_context_nmt_dataset.py \
+        # --data_prefix "$HOME/fairseq/examples/translation/iwslt15.ted.zh2en.spm.orig/$filename" \
+        # --src "zh" \
+        # --tgt "en" \
+        # --previous_n 5 \
+        # --both_context 1 \
+        # --out_dir "$HOME/cjcoref/input_data/iwslt15.zh2en" \
+        # --seg_symbol '[SEP]' \
+        # --src_jieba
+# done
 
 # Make NMT dataset for fairseq.
 # array=(train valid test)
