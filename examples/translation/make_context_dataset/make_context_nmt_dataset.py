@@ -112,6 +112,7 @@ if __name__ == "__main__":
   parser.add_argument('-p', '--previous_n', required=True, type=int)
   parser.add_argument('-o', '--out_dir', required=True, type=str)
   parser.add_argument('-b', '--both_context', required=True, type=int)
+  parser.add_argument('--seg_symbol', required=False, type=str, default="$")
 
   args = parser.parse_args()
   args.both_context = bool(args.both_context)
@@ -122,4 +123,4 @@ if __name__ == "__main__":
                            out_dir=args.out_dir,
                            both_context=args.both_context,
                            previous_n=args.previous_n,
-                           seg_symbol="$")
+                           seg_symbol=args.seg_symbol)
