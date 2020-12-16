@@ -11,7 +11,8 @@ do
         --previous_n 5 \
         --both_context 1 \
         --out_dir "$HOME/cjcoref/input_data/iwslt17" \
-        --seg_symbol '[SEP]'
+        --seg_symbol '[SEP]' \
+        --src_jieba
 done
 
 # Make NMT dataset for fairseq.

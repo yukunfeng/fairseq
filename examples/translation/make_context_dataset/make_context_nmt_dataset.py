@@ -1,5 +1,6 @@
 import argparse
 import os
+import jieba
 
 
 def make_context_nmt_dataset(data_prefix,
@@ -8,7 +9,8 @@ def make_context_nmt_dataset(data_prefix,
                              out_dir,
                              both_context=False,
                              previous_n=1,
-                             seg_symbol="SEP"):
+                             seg_symbol="SEP",
+                             src_jieba=False):
 
   data_prefix = os.path.expanduser(data_prefix)
   out_dir = os.path.expanduser(out_dir)
@@ -21,6 +23,9 @@ def make_context_nmt_dataset(data_prefix,
       line = line.strip()
       if line == "":
         continue
+      if src_jieba:
+        seg_list = jieba.cut(line)
+        line = " ".join(seg_list)
       src_lines.append(line)
 
   tgt_lines = []
@@ -113,6 +118,7 @@ if __name__ == "__main__":
   parser.add_argument('-o', '--out_dir', required=True, type=str)
   parser.add_argument('-b', '--both_context', required=True, type=int)
   parser.add_argument('--seg_symbol', required=False, type=str, default="$")
+  parser.add_argument('--src_jieba', action='store_true')
 
   args = parser.parse_args()
   args.both_context = bool(args.both_context)
@@ -123,4 +129,5 @@ if __name__ == "__main__":
                            out_dir=args.out_dir,
                            both_context=args.both_context,
                            previous_n=args.previous_n,
-                           seg_symbol=args.seg_symbol)
+                           seg_symbol=args.seg_symbol,
+                           src_jieba=args.src_jieba)
