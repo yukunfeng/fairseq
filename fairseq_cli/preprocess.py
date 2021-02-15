@@ -226,7 +226,8 @@ def main(args):
         )
 
     def make_dataset(vocab, input_prefix, output_prefix, lang, num_workers=1):
-        if args.dataset_impl == "raw":
+        #  if args.dataset_impl == "raw":
+        if args.dataset_impl in ["raw", "rawdoc"]:
             # Copy original text file to destination folder
             output_text_file = dest_path(
                 output_prefix + ".{}-{}".format(args.source_lang, args.target_lang),

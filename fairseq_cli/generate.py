@@ -28,7 +28,7 @@ def main(args):
     assert args.path is not None, '--path required for generation!'
     assert not args.sampling or args.nbest == args.beam, \
         '--sampling requires --nbest to be equal to --beam'
-    assert args.replace_unk is None or args.dataset_impl == 'raw', \
+    assert args.replace_unk is None or args.dataset_impl in ['raw', 'rawdoc'], \
         '--replace-unk requires a raw text dataset (--dataset-impl=raw)'
 
     if args.results_path is not None:

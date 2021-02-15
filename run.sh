@@ -1,12 +1,14 @@
 set -x
 
 # Preprocess/binarize the data
-dataname="iwslt17.zh2en"
-base_str="rawimpldoc"
+dataname="iwslt15.zh2en"
+# base_str="rawimpldoc"
+# base_str="rawimpldoc"
 # base_str="nodocseg_bpecode"
-# base_str="debug"
+base_str="debug"
 
-TEXT=$HOME/nmtdataset/$dataname/after_bpe
+TEXT=$HOME/nmtdataset/$dataname/cjcoref_labled
+# TEXT=$HOME/nmtdataset/$dataname/after_bpe
 
 save_dir="${base_str}${dataname}.checkpoints"
 DATA="data-bin/${base_str}${dataname}"
@@ -16,11 +18,11 @@ tensor_dir="${base_str}${dataname}.tensorlog"
 src=$(python -c "print('$dataname'.split('.')[1].split('2')[0])")
 tgt=$(python -c "print('$dataname'.split('.')[1].split('2')[1])")
 
-fairseq-preprocess --source-lang $src --target-lang $tgt \
-    --trainpref $TEXT/train --validpref $TEXT/valid --testpref $TEXT/test \
-    --destdir $DATA \
-    --workers 20 \
-    --dataset-impl raw \
+# fairseq-preprocess --source-lang $src --target-lang $tgt \
+    # --trainpref $TEXT/train --validpref $TEXT/valid --testpref $TEXT/test \
+    # --destdir $DATA \
+    # --workers 20 \
+    # --dataset-impl rawdoc \
 
 
     # --max-tokens 4096 \
@@ -43,13 +45,13 @@ fairseq-train $DATA \
     --save-dir "$save_dir" \
     --max-epoch 30 \
     --seed 234 \
-    --dataset-impl raw \
+    --dataset-impl rawdoc \
     --left-pad-source "False" \
 
 
-fairseq-generate $DATA \
-    --path $save_dir/checkpoint_last.pt \
-    --batch-size 128 --beam 5 --remove-bpe \
-    --dataset-impl raw \
+# fairseq-generate $DATA \
+    # --path $save_dir/checkpoint_last.pt \
+    # --batch-size 128 --beam 5 --remove-bpe \
+    # --dataset-impl rawdoc \
 
 

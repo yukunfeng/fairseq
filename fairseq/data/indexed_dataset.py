@@ -24,7 +24,7 @@ def __best_fitting_dtype(vocab_size=None):
 
 
 def get_available_dataset_impl():
-    return ['raw', 'lazy', 'cached', 'mmap', 'fasta']
+    return ['raw', 'rawdoc', 'lazy', 'cached', 'mmap', 'fasta']
 
 
 def infer_dataset_impl(path):
@@ -58,6 +58,9 @@ def make_dataset(path, impl, fix_lua_indexing=False, dictionary=None):
     if impl == 'raw' and IndexedRawTextDataset.exists(path):
         assert dictionary is not None
         return IndexedRawTextDataset(path, dictionary)
+    elif impl == 'rawdoc' and IndexedRawTextDoCDataset.exists(path):
+        assert dictionary is not None
+        return IndexedRawTextDoCDataset(path, dictionary)
     elif impl == 'lazy' and IndexedDataset.exists(path):
         return IndexedDataset(path, fix_lua_indexing=fix_lua_indexing)
     elif impl == 'cached' and IndexedDataset.exists(path):
@@ -73,6 +76,8 @@ def make_dataset(path, impl, fix_lua_indexing=False, dictionary=None):
 def dataset_exists(path, impl):
     if impl == 'raw':
         return IndexedRawTextDataset.exists(path)
+    elif impl == 'rawdoc':
+        return IndexedRawTextDoCDataset.exists(path)
     elif impl == 'mmap':
         return MMapIndexedDataset.exists(path)
     else:
@@ -289,6 +294,43 @@ class IndexedRawTextDataset(FairseqDataset):
     @staticmethod
     def exists(path):
         return PathManager.exists(path)
+
+
+class IndexedRawTextDoCDataset(IndexedRawTextDataset):
+    """This dataset will also read coreference annotations for each instance.
+    """
+
+    def __init__(self, path, dictionary, append_eos=True, reverse_order=False):
+        self.tokens_list = []
+        self.lines = []
+        self.sizes = []
+        self.annotations = []
+        self.append_eos = append_eos
+        self.reverse_order = reverse_order
+        self.read_data(path, dictionary)
+        self.size = len(self.tokens_list)
+
+    def read_data(self, path, dictionary):
+        with open(path, 'r', encoding='utf-8') as f:
+            for line in f:
+                annotation, line = line.split('\t')
+                annotation = annotation.strip()
+                anns_pair_list = []
+                if annotation != '':
+                    items = annotation.split()
+                    for item in items:
+                        cluster, token_pos = item.split(",")
+                        anns_pair_list.append([int(cluster), int(token_pos)])
+                self.annotations.append(anns_pair_list)
+
+                self.lines.append(line.strip('\n'))
+                tokens = dictionary.encode_line(
+                    line, add_if_not_exist=False,
+                    append_eos=self.append_eos, reverse_order=self.reverse_order,
+                ).long()
+                self.tokens_list.append(tokens)
+                self.sizes.append(len(tokens))
+        self.sizes = np.array(self.sizes)
 
 
 class IndexedDatasetBuilder(object):
