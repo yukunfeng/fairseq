@@ -351,6 +351,24 @@ class LanguagePairDataset(FairseqDataset):
             pad_to_length=pad_to_length,
             pad_to_multiple=self.pad_to_multiple,
         )
+
+        def id_to_token(indice):
+          src_ids = res['net_input']['src_tokens'][indice]
+          tgt_ids = res['target'][indice]
+          src_tokens = [self.src_dict[src_id] for src_id in src_ids]
+          src_tokens = " ".join(src_tokens)
+          tgt_tokens = [self.tgt_dict[tgt_id] for tgt_id in tgt_ids]
+          tgt_tokens = " ".join(tgt_tokens)
+          print(f"src tokens: {src_tokens}")
+          print(f"tgt tokens: {tgt_tokens}")
+        #  print(f"ntokens: {res['ntokens']} nsentences: {res['nsentences']}")
+        #  src_tokens_shape = res['net_input']['src_tokens'].shape
+        #  tgt_tokens_shape = res['target'].shape
+        #  print(f"src_tokens shape: {src_tokens_shape}, tgt shape: {tgt_tokens_shape}")
+        #  print(f"src_tokens shape: {src_tokens_shape[0]*src_tokens_shape[1]}")
+        #  print(f"tgt_tokens shape: {tgt_tokens_shape[0]*tgt_tokens_shape[1]}")
+        #  id_to_token(5)
+
         if self.src_lang_id is not None or self.tgt_lang_id is not None:
             src_tokens = res['net_input']['src_tokens']
             bsz = src_tokens.size(0)
@@ -377,6 +395,8 @@ class LanguagePairDataset(FairseqDataset):
     def ordered_indices(self):
         """Return an ordered list of indices. Batches will be constructed based
         on this order."""
+        indices = np.arange(len(self), dtype=np.int64)
+        return indices
         if self.shuffle:
             indices = np.random.permutation(len(self)).astype(np.int64)
         else:
