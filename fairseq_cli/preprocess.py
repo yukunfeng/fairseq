@@ -234,6 +234,14 @@ def main(args):
                 lang,
             )
             shutil.copyfile(file_name(input_prefix, lang), output_text_file)
+            # Copy annotations
+            if args.dataset_impl == "rawdoc":
+                annotation_input = file_name(input_prefix, lang) + ".ann"
+                annotation_out = f"{output_text_file}.ann"
+                import os.path
+                if os.path.isfile(annotation_input):
+                    shutil.copyfile(annotation_input, annotation_out)
+
         else:
             make_binary_dataset(vocab, input_prefix, output_prefix, lang, num_workers)
 
