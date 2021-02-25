@@ -310,19 +310,16 @@ class IndexedRawTextDoCDataset(IndexedRawTextDataset):
         self.read_data(path, dictionary)
         self.size = len(self.tokens_list)
 
+        # Load annotations if current src/tgt has it.
+        annotation_path = f"{path}.ann"
+        import os.path
+        import ipdb; ipdb.set_trace()
+        if os.path.isfile(annotation_path):
+            self.read_annnotations(annotation_path)
+
     def read_data(self, path, dictionary):
         with open(path, 'r', encoding='utf-8') as f:
             for line in f:
-                annotation, line = line.split('\t')
-                annotation = annotation.strip()
-                anns_pair_list = []
-                if annotation != '':
-                    items = annotation.split()
-                    for item in items:
-                        cluster, token_pos = item.split(",")
-                        anns_pair_list.append([int(cluster), int(token_pos)])
-                self.annotations.append(anns_pair_list)
-
                 self.lines.append(line.strip('\n'))
                 tokens = dictionary.encode_line(
                     line, add_if_not_exist=False,
@@ -331,6 +328,19 @@ class IndexedRawTextDoCDataset(IndexedRawTextDataset):
                 self.tokens_list.append(tokens)
                 self.sizes.append(len(tokens))
         self.sizes = np.array(self.sizes)
+
+    def read_annnotations(self, path):
+        with open(path, 'r', encoding='utf-8') as f:
+            for annotation in f:
+                annotation = annotation.strip()
+                anns_pair_list = []
+                if annotation != '':
+                    items = annotation.split()
+                    for item in items:
+                        cluster, token_pos = item.split(",")
+                        anns_pair_list.append([int(cluster), int(token_pos)])
+                self.annotations.append(anns_pair_list)
+        assert len(self.annotations) == len(self.lines)
 
 
 class IndexedDatasetBuilder(object):
