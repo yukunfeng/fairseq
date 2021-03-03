@@ -4,6 +4,7 @@ from torch_geometric.nn.conv.gat_conv import GATConv
 
 torch.manual_seed(0)
 
+
 def gat_test_single():
   # example sentence: w0 w1 w2 w3 w4
   # suppose, w0 and w1 is connected, w2 and w3 is connected
@@ -13,6 +14,7 @@ def gat_test_single():
   x = torch.rand((5, 3))
   gnn = GATConv(x.shape[1], x.shape[1])
   gnn_out = gnn(x, edge_index)
+
 
 def gat_test_minibatch():
   # example sentence: w0 w1 w2 w3 w4
@@ -35,6 +37,7 @@ def gat_test_minibatch():
   gnn_out = gnn(x=batch.x, edge_index=batch.edge_index)
   print(f"using batch")
   print(gnn_out)
+
 
 if __name__ == "__main__":
   #  gat_test()
