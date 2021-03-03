@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 set -x
 
 # Preprocess/binarize the data
@@ -22,7 +24,7 @@ tgt=$(python -c "print('$dataname'.split('.')[1].split('2')[1])")
     # --trainpref $TEXT/train --validpref $TEXT/valid --testpref $TEXT/test \
     # --destdir $DATA \
     # --workers 20 \
-    # --dataset-impl rawdoc \
+    # --dataset-impl rawdoc
 
 
     # --max-tokens 4096 \
