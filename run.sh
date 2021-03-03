@@ -9,7 +9,8 @@ dataname="iwslt15.zh2en"
 # base_str="nodocseg_bpecode"
 base_str="debug"
 
-TEXT=$HOME/nmtdataset/$dataname/cjcoref_labled
+TEXT=$HOME/nmtdataset/$dataname/cjcoref_2to2_fairseq_input
+# TEXT=$HOME/nmtdataset/$dataname/cjcoref_labled
 # TEXT=$HOME/nmtdataset/$dataname/after_bpe
 
 save_dir="${base_str}${dataname}.checkpoints"
@@ -27,15 +28,13 @@ tgt=$(python -c "print('$dataname'.split('.')[1].split('2')[1])")
     # --dataset-impl rawdoc
 
 
-    # --max-tokens 4096 \
-    # --num-workers 1 \
 fairseq-train $DATA \
     --arch transformer_iwslt_de_en --share-decoder-input-output-embed \
     --optimizer adam --adam-betas '(0.9, 0.98)' --clip-norm 0.0 \
     --lr 5e-4 --lr-scheduler inverse_sqrt --warmup-updates 4000 \
     --dropout 0.3 --weight-decay 0.0001 \
     --criterion label_smoothed_cross_entropy --label-smoothing 0.1 \
-    --max-tokens 12288 \
+    --max-tokens 4096 \
     --log-interval 10000000000 \
     --eval-bleu \
     --eval-bleu-args '{"beam": 5, "max_len_a": 1.2, "max_len_b": 10}' \

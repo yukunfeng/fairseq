@@ -200,6 +200,7 @@ class LanguagePairDataset(FairseqDataset):
         src_lang_id=None,
         tgt_lang_id=None,
         pad_to_multiple=1,
+        unordered_indices_by_length=False,
     ):
         if tgt_dict is not None:
             assert src_dict.pad() == tgt_dict.pad()
@@ -207,6 +208,7 @@ class LanguagePairDataset(FairseqDataset):
             assert src_dict.unk() == tgt_dict.unk()
         if tgt is not None:
             assert len(src) == len(tgt), "Source and target must contain the same number of examples"
+        self.unordered_indices_by_length = unordered_indices_by_length
         self.src = src
         self.tgt = tgt
         self.src_sizes = np.array(src_sizes)
@@ -395,8 +397,9 @@ class LanguagePairDataset(FairseqDataset):
     def ordered_indices(self):
         """Return an ordered list of indices. Batches will be constructed based
         on this order."""
-        indices = np.arange(len(self), dtype=np.int64)
-        return indices
+        if self.unordered_indices_by_length:
+            indices = np.arange(len(self), dtype=np.int64)
+            return indices
         if self.shuffle:
             indices = np.random.permutation(len(self)).astype(np.int64)
         else:

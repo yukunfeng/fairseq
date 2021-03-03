@@ -43,6 +43,7 @@ def load_langpair_dataset(
     num_buckets=0,
     shuffle=True,
     pad_to_multiple=1,
+    unordered_indices_by_length=False,
 ):
 
     def split_exists(split, src, tgt, lang, data_path):
@@ -131,6 +132,7 @@ def load_langpair_dataset(
         num_buckets=num_buckets,
         shuffle=shuffle,
         pad_to_multiple=pad_to_multiple,
+        unordered_indices_by_length=unordered_indices_by_length,
     )
 
 
@@ -206,6 +208,8 @@ class TranslationTask(LegacyFairseqTask):
                                  'e.g., \'{"beam": 4, "lenpen": 0.6}\'')
         parser.add_argument('--eval-bleu-print-samples', action='store_true',
                             help='print sample generations during validation')
+        parser.add_argument('--unordered-indices-by-length', action='store_true',
+                            help='if true, not sort pairs by their length')
         # fmt: on
 
     def __init__(self, args, src_dict, tgt_dict):
@@ -271,6 +275,7 @@ class TranslationTask(LegacyFairseqTask):
             num_buckets=self.args.num_batch_buckets,
             shuffle=(split != 'test'),
             pad_to_multiple=self.args.required_seq_len_multiple,
+            unordered_indices_by_length=self.args.unordered_indices_by_length
         )
 
     def build_dataset_for_inference(self, src_tokens, src_lengths, constraints=None):

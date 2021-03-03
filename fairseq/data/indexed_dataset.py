@@ -313,7 +313,6 @@ class IndexedRawTextDoCDataset(IndexedRawTextDataset):
         # Load annotations if current src/tgt has it.
         annotation_path = f"{path}.ann"
         import os.path
-        import ipdb; ipdb.set_trace()
         if os.path.isfile(annotation_path):
             self.read_annnotations(annotation_path)
 
