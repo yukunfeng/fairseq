@@ -16,6 +16,18 @@ def gat_test_single():
   gnn_out = gnn(x, edge_index)
 
 
+def gat_test_single_with_empty_edges():
+  # example sentence: w0 w1 w2 w3 w4
+  # suppose, each node is isolated and only replying on self-loop
+  # how about the edge index
+  # [[0, 1, 2, 3], [1, 0, 3, 2]]
+  edge_index = torch.tensor([[], []], dtype=torch.long)
+  x = torch.rand((5, 3))
+  gnn = GATConv(x.shape[1], x.shape[1])
+  gnn_out = gnn(x, edge_index=edge_index)
+  print(gnn_out)
+
+
 def gat_test_minibatch():
   # example sentence: w0 w1 w2 w3 w4
   # suppose, w0 and w1 is connected, w2 and w3 is connected
@@ -41,4 +53,5 @@ def gat_test_minibatch():
 
 if __name__ == "__main__":
   #  gat_test()
-  gat_test_minibatch()
+  #  gat_test_minibatch()
+  gat_test_single_with_empty_edges()
