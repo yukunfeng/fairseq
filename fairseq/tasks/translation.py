@@ -19,6 +19,7 @@ from fairseq.data import (
     encoders,
     indexed_dataset,
     LanguagePairDataset,
+    DocLanguagePairDataset,
     PrependTokenDataset,
     StripTokenDataset,
     TruncateDataset,
@@ -123,17 +124,31 @@ def load_langpair_dataset(
             align_dataset = data_utils.load_indexed_dataset(align_path, None, dataset_impl)
 
     tgt_dataset_sizes = tgt_dataset.sizes if tgt_dataset is not None else None
-    return LanguagePairDataset(
-        src_dataset, src_dataset.sizes, src_dict,
-        tgt_dataset, tgt_dataset_sizes, tgt_dict,
-        left_pad_source=left_pad_source,
-        left_pad_target=left_pad_target,
-        align_dataset=align_dataset, eos=eos,
-        num_buckets=num_buckets,
-        shuffle=shuffle,
-        pad_to_multiple=pad_to_multiple,
-        unordered_indices_by_length=unordered_indices_by_length,
-    )
+
+    if dataset_impl == 'rawdoc':
+        return DocLanguagePairDataset(
+            src_dataset, src_dataset.sizes, src_dict,
+            tgt_dataset, tgt_dataset_sizes, tgt_dict,
+            left_pad_source=left_pad_source,
+            left_pad_target=left_pad_target,
+            align_dataset=align_dataset, eos=eos,
+            num_buckets=num_buckets,
+            shuffle=shuffle,
+            pad_to_multiple=pad_to_multiple,
+            unordered_indices_by_length=unordered_indices_by_length,
+        )
+    else:
+        return LanguagePairDataset(
+            src_dataset, src_dataset.sizes, src_dict,
+            tgt_dataset, tgt_dataset_sizes, tgt_dict,
+            left_pad_source=left_pad_source,
+            left_pad_target=left_pad_target,
+            align_dataset=align_dataset, eos=eos,
+            num_buckets=num_buckets,
+            shuffle=shuffle,
+            pad_to_multiple=pad_to_multiple,
+            unordered_indices_by_length=unordered_indices_by_length,
+        )
 
 
 @register_task('translation')

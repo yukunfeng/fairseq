@@ -58,9 +58,9 @@ def make_dataset(path, impl, fix_lua_indexing=False, dictionary=None):
     if impl == 'raw' and IndexedRawTextDataset.exists(path):
         assert dictionary is not None
         return IndexedRawTextDataset(path, dictionary)
-    elif impl == 'rawdoc' and IndexedRawTextDoCDataset.exists(path):
+    elif impl == 'rawdoc' and IndexedRawTextDocDataset.exists(path):
         assert dictionary is not None
-        return IndexedRawTextDoCDataset(path, dictionary)
+        return IndexedRawTextDocDataset(path, dictionary)
     elif impl == 'lazy' and IndexedDataset.exists(path):
         return IndexedDataset(path, fix_lua_indexing=fix_lua_indexing)
     elif impl == 'cached' and IndexedDataset.exists(path):
@@ -77,7 +77,7 @@ def dataset_exists(path, impl):
     if impl == 'raw':
         return IndexedRawTextDataset.exists(path)
     elif impl == 'rawdoc':
-        return IndexedRawTextDoCDataset.exists(path)
+        return IndexedRawTextDocDataset.exists(path)
     elif impl == 'mmap':
         return MMapIndexedDataset.exists(path)
     else:
@@ -296,7 +296,7 @@ class IndexedRawTextDataset(FairseqDataset):
         return PathManager.exists(path)
 
 
-class IndexedRawTextDoCDataset(IndexedRawTextDataset):
+class IndexedRawTextDocDataset(IndexedRawTextDataset):
     """This dataset will also read coreference annotations for each instance.
     """
 
