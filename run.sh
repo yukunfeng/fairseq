@@ -4,10 +4,10 @@ set -x
 
 # Preprocess/binarize the data
 dataname="iwslt15.zh2en"
-# base_str="rawimpldoc"
+base_str="rawimpldoc"
 # base_str="rawimpldoc"
 # base_str="nodocseg_bpecode"
-base_str="debug"
+# base_str="debug"
 
 TEXT=$HOME/nmtdataset/$dataname/cjcoref_2to2_fairseq_input
 # TEXT=$HOME/nmtdataset/$dataname/cjcoref_labled
@@ -21,11 +21,11 @@ tensor_dir="${base_str}${dataname}.tensorlog"
 src=$(python -c "print('$dataname'.split('.')[1].split('2')[0])")
 tgt=$(python -c "print('$dataname'.split('.')[1].split('2')[1])")
 
-# fairseq-preprocess --source-lang $src --target-lang $tgt \
-    # --trainpref $TEXT/train --validpref $TEXT/valid --testpref $TEXT/test \
-    # --destdir $DATA \
-    # --workers 20 \
-    # --dataset-impl rawdoc
+fairseq-preprocess --source-lang $src --target-lang $tgt \
+    --trainpref $TEXT/train --validpref $TEXT/valid --testpref $TEXT/test \
+    --destdir $DATA \
+    --workers 20 \
+    --dataset-impl rawdoc
 
 
 fairseq-train $DATA \
@@ -50,9 +50,9 @@ fairseq-train $DATA \
     --left-pad-source "False" \
 
 
-# fairseq-generate $DATA \
-    # --path $save_dir/checkpoint_last.pt \
-    # --batch-size 128 --beam 5 --remove-bpe \
-    # --dataset-impl rawdoc \
+fairseq-generate $DATA \
+    --path $save_dir/checkpoint_last.pt \
+    --batch-size 128 --beam 5 --remove-bpe \
+    --dataset-impl rawdoc \
 
 
