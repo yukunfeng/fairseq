@@ -51,7 +51,35 @@ def gat_test_minibatch():
   print(gnn_out)
 
 
+def gat_test_minibatch_with_different_edges():
+  # example sentence: w0 w1 w2 w3 w4
+  node_dim = 3
+  data_list = []
+  gnn = GATConv(node_dim, node_dim)
+
+  edge_index = torch.tensor([[0, 1, 2, 3], [1, 0, 3, 2]], dtype=torch.long)
+  x = torch.rand((5, node_dim))
+  data_list.append(torch_geometric.data.Data(x=x, edge_index=edge_index))
+  gnn_out = gnn(x, edge_index)
+  print(f"0")
+  print(gnn_out)
+
+  edge_index = torch.tensor([[2, 1], [1, 2]], dtype=torch.long)
+  x = torch.rand((5, node_dim))
+  data_list.append(torch_geometric.data.Data(x=x, edge_index=edge_index))
+  gnn_out = gnn(x, edge_index)
+  print(f"1")
+  print(gnn_out)
+
+
+  batch = torch_geometric.data.Batch.from_data_list(data_list)
+  gnn_out = gnn(x=batch.x, edge_index=batch.edge_index)
+  print(f"using batch")
+  print(gnn_out)
+
+
 if __name__ == "__main__":
   #  gat_test()
   #  gat_test_minibatch()
-  gat_test_single_with_empty_edges()
+  #  gat_test_single_with_empty_edges()
+  gat_test_minibatch_with_different_edges()
