@@ -191,9 +191,24 @@ def collate_for_doc(
         align_weights = align_tgt_c[align_tgt_i[np.arange(len(align_tgt))]]
         return 1. / align_weights.float()
 
+    id = torch.LongTensor([s['id'] for s in samples])
+    src_tokens = merge(
+        'source', left_pad=left_pad_source,
+        pad_to_length=pad_to_length['source'] if pad_to_length is not None else None
+    )
+    # sort by descending source length
+    src_lengths = torch.LongTensor([
+        s['source'].ne(pad_idx).long().sum() for s in samples
+    ])
+    src_lengths, sort_order = src_lengths.sort(descending=True)
+    id = id.index_select(0, sort_order)
+    src_tokens = src_tokens.index_select(0, sort_order)
+
     # Making edge index for GNN input.
     edge_indexes = []
-    for sample in samples:
+    for i in sort_order:
+        sample = samples[i]
+        index = sample['id']
         src_annotation = sample['src_annotation']
         cluster_id2token_pos = {}
         for cluster_id, token_pos in src_annotation:
@@ -208,19 +223,6 @@ def collate_for_doc(
                         edge_index[0].append(i)
                         edge_index[1].append(j)
         edge_indexes.append(edge_index)
-
-    id = torch.LongTensor([s['id'] for s in samples])
-    src_tokens = merge(
-        'source', left_pad=left_pad_source,
-        pad_to_length=pad_to_length['source'] if pad_to_length is not None else None
-    )
-    # sort by descending source length
-    src_lengths = torch.LongTensor([
-        s['source'].ne(pad_idx).long().sum() for s in samples
-    ])
-    src_lengths, sort_order = src_lengths.sort(descending=True)
-    id = id.index_select(0, sort_order)
-    src_tokens = src_tokens.index_select(0, sort_order)
 
     prev_output_tokens = None
     target = None
@@ -256,6 +258,7 @@ def collate_for_doc(
         'net_input': {
             'src_tokens': src_tokens,
             'src_lengths': src_lengths,
+            #  'src_edge_indexes': edge_indexes,
         },
         'target': target,
     }
