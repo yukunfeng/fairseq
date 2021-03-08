@@ -258,7 +258,7 @@ def collate_for_doc(
         'net_input': {
             'src_tokens': src_tokens,
             'src_lengths': src_lengths,
-            #  'src_edge_indexes': edge_indexes,
+            'src_edge_indexes': edge_indexes,
         },
         'target': target,
     }
@@ -670,10 +670,15 @@ class DocLanguagePairDataset(LanguagePairDataset):
             tgt_ids = res['target'][indice]
             src_tokens = [self.src_dict[src_id] for src_id in src_ids]
             src_tokens = " ".join(src_tokens)
+            src_starting_idxes = src_ids[0:5]
             tgt_tokens = [self.tgt_dict[tgt_id] for tgt_id in tgt_ids]
             tgt_tokens = " ".join(tgt_tokens)
-            print(f"src tokens: {src_tokens}")
-            print(f"tgt tokens: {tgt_tokens}")
+            tgt_starting_idxes = tgt_ids[0:5]
+            src_edge_index = res['net_input']['src_edge_indexes'][indice]
+            #  print(f"src tokens: {src_tokens}")
+            #  print(f"tgt tokens: {tgt_tokens}")
+            debug_line = f"src:{src_tokens} srcidxes:{src_starting_idxes} edge: {src_edge_index} tgt:{tgt_tokens} tgtidxes:{tgt_starting_idxes}"
+            return debug_line
 
         #  print(f"ntokens: {res['ntokens']} nsentences: {res['nsentences']}")
         #  src_tokens_shape = res['net_input']['src_tokens'].shape
@@ -682,6 +687,12 @@ class DocLanguagePairDataset(LanguagePairDataset):
         #  print(f"src_tokens shape: {src_tokens_shape[0]*src_tokens_shape[1]}")
         #  print(f"tgt_tokens shape: {tgt_tokens_shape[0]*tgt_tokens_shape[1]}")
         #  id_to_token(5)
+
+        # For debug
+        #  debug_lines = []
+        #  for i in range(15):
+            #  debug_lines.append(id_to_token(i))
+        #  res['net_input']['debug_lines'] = debug_lines
 
         if self.src_lang_id is not None or self.tgt_lang_id is not None:
             src_tokens = res['net_input']['src_tokens']
