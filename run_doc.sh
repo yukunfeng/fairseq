@@ -6,7 +6,7 @@ set -x
 dataname="iwslt15.zh2en"
 base_str="debugdoc"
 
-TEXT=$HOME/nmtdataset/$dataname/after_bpe
+TEXT=$HOME/nmtdataset/$dataname/cjcoref_2to2_fairseq_input
 
 save_dir="${base_str}${dataname}.checkpoints"
 DATA="data-bin/${base_str}${dataname}"
@@ -16,11 +16,11 @@ tensor_dir="${base_str}${dataname}.tensorlog"
 src=$(python -c "print('$dataname'.split('.')[1].split('2')[0])")
 tgt=$(python -c "print('$dataname'.split('.')[1].split('2')[1])")
 
-fairseq-preprocess --source-lang $src --target-lang $tgt \
-    --trainpref $TEXT/train --validpref $TEXT/valid --testpref $TEXT/test \
-    --destdir $DATA \
-    --workers 20 \
-    --dataset-impl rawdoc
+# fairseq-preprocess --source-lang $src --target-lang $tgt \
+    # --trainpref $TEXT/train --validpref $TEXT/valid --testpref $TEXT/test \
+    # --destdir $DATA \
+    # --workers 20 \
+    # --dataset-impl rawdoc
 
 
 fairseq-train $DATA \

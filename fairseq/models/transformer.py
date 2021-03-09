@@ -295,6 +295,15 @@ class TransformerModel(FairseqEncoderDecoderModel):
 
 @register_model("doctransformer")
 class DocTransformerModel(TransformerModel):
+    def __init__(self, args, encoder, decoder):
+        super().__init__(args, encoder, decoder)
+        # Define graph nerual network here.
+        from torch_geometric.nn.conv.gat_conv import GATConv
+        node_dim = encoder.embed_tokens.embedding_dim
+        self.gnn = GATConv(in_channels=node_dim, out_channels=node_dim)
+        if not args.cpu:
+            self.gnn = self.gnn.cuda()
+
     # TorchScript doesn't support optional arguments with variable length (**kwargs).
     # Current workaround is to add union of all arguments in child classes.
     def forward(
@@ -317,9 +326,37 @@ class DocTransformerModel(TransformerModel):
         encoder_out = self.encoder(
             src_tokens, src_lengths=src_lengths, return_all_hiddens=return_all_hiddens
         )
+
+        # Construct graph data here.
+        from torch_geometric.data import Data as Gdata
+        from torch_geometric.data import Batch as Gbatch
+        gdata_list = []
+        max_seq, batch_size, embed_dim = encoder_out.encoder_out.shape
+        # batch_node_embs: (batch, max_seq, dim)
+        batch_node_embs = encoder_out.encoder_out.transpose(0, 1)
+        for i in range(batch_size):
+            edge_index = torch.tensor(src_edge_indexes[i],
+                                      dtype=torch.long,
+                                      device=batch_node_embs.device)
+            # node_embs size: (max_seq, dim)
+            node_emb = batch_node_embs[i]
+            gdata_list.append(Gdata(x=node_emb, edge_index=edge_index))
+        gbatch = Gbatch.from_data_list(gdata_list)
+        gnn_out = self.gnn(x=gbatch.x, edge_index=gbatch.edge_index)
+        gnn_out = gnn_out.reshape((batch_size, max_seq, embed_dim)).transpose(0, 1)
+        # have error in encoder_out.encoder_out = gnn_out
+        encoder_out_with_gnn = EncoderOut(
+            encoder_out=gnn_out,
+            encoder_padding_mask=encoder_out.encoder_padding_mask,
+            encoder_embedding=encoder_out.encoder_embedding,
+            encoder_states=encoder_out.encoder_states,
+            src_tokens=encoder_out.src_tokens,
+            src_lengths=encoder_out.src_lengths,
+        )
+
         decoder_out = self.decoder(
             prev_output_tokens,
-            encoder_out=encoder_out,
+            encoder_out=encoder_out_with_gnn,
             features_only=features_only,
             alignment_layer=alignment_layer,
             alignment_heads=alignment_heads,
