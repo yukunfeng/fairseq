@@ -4,14 +4,9 @@ set -x
 
 # Preprocess/binarize the data
 dataname="iwslt15.zh2en"
-base_str="rawimpldoc"
-# base_str="rawimpldoc"
-# base_str="nodocseg_bpecode"
-# base_str="debug"
+base_str="nodoc"
 
-TEXT=$HOME/nmtdataset/$dataname/cjcoref_2to2_fairseq_input
-# TEXT=$HOME/nmtdataset/$dataname/cjcoref_labled
-# TEXT=$HOME/nmtdataset/$dataname/after_bpe
+TEXT=$HOME/nmtdataset/$dataname/after_bpe
 
 save_dir="${base_str}${dataname}.checkpoints"
 DATA="data-bin/${base_str}${dataname}"
@@ -25,11 +20,11 @@ fairseq-preprocess --source-lang $src --target-lang $tgt \
     --trainpref $TEXT/train --validpref $TEXT/valid --testpref $TEXT/test \
     --destdir $DATA \
     --workers 20 \
-    --dataset-impl rawdoc
+    --dataset-impl raw
 
 
 fairseq-train $DATA \
-    --arch transformer_iwslt_de_en_similar_with_doc --share-decoder-input-output-embed \
+    --arch transformer_iwslt_de_en --share-decoder-input-output-embed \
     --optimizer adam --adam-betas '(0.9, 0.98)' --clip-norm 0.0 \
     --lr 5e-4 --lr-scheduler inverse_sqrt --warmup-updates 4000 \
     --dropout 0.3 --weight-decay 0.0001 \
@@ -46,13 +41,13 @@ fairseq-train $DATA \
     --save-dir "$save_dir" \
     --max-epoch 30 \
     --seed 234 \
-    --dataset-impl rawdoc \
+    --dataset-impl raw \
     --left-pad-source "False" \
 
 
 fairseq-generate $DATA \
     --path $save_dir/checkpoint_last.pt \
     --batch-size 128 --beam 5 --remove-bpe \
-    --dataset-impl rawdoc \
+    --dataset-impl raw \
 
 
